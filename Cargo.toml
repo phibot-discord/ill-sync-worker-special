@@ -1,0 +1,26 @@
+[package]
+name = "phi-specials"
+version = "0.1.0"
+edition = "2021"
+description = "Run by hand: the Phigros items phi-unpackd leaves out, those only the Chapter 9 passcode or the game's code gives"
+rust-version = "1.89"
+
+[dependencies]
+phi-unpackd = { path = "../ill-sync-worker" }
+aes = "0.8"
+cbc = { version = "0.1", features = ["alloc"] }
+image = { version = "0.24.9", default-features = false, features = ["png", "jpeg"] }
+serde_json = "1"
+sha2 = "0.10"
+memchr = "2.8"
+
+[dev-dependencies]
+zip = { version = "0.6", default-features = false, features = ["deflate"] }
+
+[profile.release]
+lto = "fat"
+codegen-units = 1
+
+# Image kernels are ~60x slower unoptimised; keep tests and dev runs usable
+[profile.dev.package."*"]
+opt-level = 3
