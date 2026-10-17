@@ -166,8 +166,15 @@ pub fn write(sources: &Sources) -> Result<Written, String> {
             if !images.is_empty() {
                 out["images"] = json!(images);
             }
+            if let Some(chapter) = group["chapter"].as_str() {
+                out["chapter"] = json!(chapter);
+            }
             if let Some(clip) = group["pv"].as_str() {
-                pv.push(json!({ "clip": clip, "section": id, "group": gid }));
+                let mut at = json!({ "clip": clip, "section": id, "group": gid });
+                if let Some(chapter) = group["chapter"].as_str() {
+                    at["chapter"] = json!(chapter);
+                }
+                pv.push(at);
             }
             groups.push(out);
         }
@@ -243,5 +250,10 @@ mod tests {
             serde_json::from_slice(&written.files.iter().find(|(p, _)| p == INDEX).unwrap().1)
                 .unwrap();
         assert_eq!(index["sections"].as_array().unwrap().len(), 6);
+        let chapters: Vec<&str> = groups(&data)
+            .filter(|g| g["pv"].is_string())
+            .filter_map(|g| g["chapter"].as_str())
+            .collect();
+        assert_eq!(chapters, ["c8", "c9"]);
     }
 }

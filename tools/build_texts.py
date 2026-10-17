@@ -88,6 +88,15 @@ STORY = {
         ("第九章推演结束后滚动显示。", "Scrolls after Chapter 9's Deduction."),
     ),
 }
+# The Collection chapter each story group is shown with on the site
+CHAPTERS = {
+    "il2cpp.c9.DSUnlockControl..cctor.0": "c9",
+    "il2cpp.c9.Phigros2.Chapter9.Chapter9Phase1Control..cctor.2": "c9",
+    "il2cpp.c9.Phigros2.Chapter9.Chapter9Phase1Control..cctor.3": "c9",
+    "afterdeduction": "c9",
+    "staffroll": "c9",
+    "qd": "c8",
+}
 # Friendly names for the groups and classes most players would look for
 TITLES = {
     "songnames": ("游戏内的曲名写法", "Song names as the game spells them"),
@@ -293,6 +302,8 @@ def main(path):
             "check": check_of(gid),
             "lines": lines,
         }
+        if key in CHAPTERS:
+            entry["chapter"] = CHAPTERS[key]
         if group["reportSection"] == "f-baked-image":
             entry["check"] = "none"
             entry["images"] = images_of(group["where"])
@@ -302,7 +313,8 @@ def main(path):
         (title, note), story = STORY[key], sections["story"]
         at = next((n for n, g in enumerate(story) if g["id"] == before), len(story))
         merged[key] = {"id": key, "title": {"zh": title[0], "en": title[1]},
-                       "note": {"zh": note[0], "en": note[1]}, "check": "metadata", "lines": []}
+                       "note": {"zh": note[0], "en": note[1]}, "check": "metadata", "lines": [],
+                       **({"chapter": CHAPTERS[key]} if key in CHAPTERS else {})}
         story.insert(at, merged[key])
     for key, lines in LINES.items():
         merged[key]["lines"] = lines
